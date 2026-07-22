@@ -60,6 +60,7 @@ function App() {
       ? `${protocol}//${window.location.host}`
       : 'ws://localhost:5001';
     
+    console.log('Connecting to WebSocket:', wsUrl);
     socketRef.current = io(wsUrl);
     
     socketRef.current.on('connect', () => {

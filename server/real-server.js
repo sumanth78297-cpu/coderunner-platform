@@ -13,9 +13,10 @@ const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
     origin: process.env.NODE_ENV === 'production' 
-      ? process.env.CORS_ORIGIN || false 
+      ? true  // Allow all origins in production for now
       : "http://localhost:5001",
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
 
@@ -25,8 +26,9 @@ app.use(helmet({
 }));
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? process.env.CORS_ORIGIN || false 
-    : "http://localhost:5001"
+    ? true  // Allow all origins in production
+    : "http://localhost:5001",
+  credentials: true
 }));
 
 // Rate limiting
