@@ -3,7 +3,7 @@ FROM node:18-slim AS client-builder
 
 WORKDIR /app/client
 COPY client/package*.json ./
-RUN npm ci && npm cache clean --force
+RUN npm install && npm cache clean --force
 
 COPY client/ ./
 RUN npm run build
@@ -17,7 +17,7 @@ WORKDIR /app
 
 # Copy server dependencies and install
 COPY server/package*.json ./server/
-RUN cd server && npm ci && npm cache clean --force
+RUN cd server && npm install && npm cache clean --force
 
 # Copy server source
 COPY server/ ./server/

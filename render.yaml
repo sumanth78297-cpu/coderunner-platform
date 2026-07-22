@@ -4,13 +4,16 @@ services:
     runtime: node
     plan: free
     buildCommand: |
-      echo "Installing root dependencies..."
+      echo "=== Installing root dependencies ==="
       npm install
-      echo "Building client..."
-      cd client && npm install && npm run build
-      echo "Installing server dependencies..."  
-      cd ../server && npm install
-      echo "Build completed successfully!"
+      echo "=== Building client ==="
+      cd client 
+      npm install --legacy-peer-deps
+      npm run build
+      echo "=== Installing server dependencies ==="  
+      cd ../server 
+      npm install
+      echo "=== Build completed successfully ==="
     startCommand: cd server && node real-server.js
     envVars:
       - key: NODE_ENV

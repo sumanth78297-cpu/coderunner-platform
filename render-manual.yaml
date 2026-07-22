@@ -1,0 +1,13 @@
+# Alternative Render configuration if main render.yaml fails
+services:
+  - type: web
+    name: coderunner-alt
+    runtime: node
+    buildCommand: npm install && cd client && npm install --legacy-peer-deps && npm run build && cd ../server && npm install
+    startCommand: cd server && node real-server.js
+    plan: free
+    env:
+      - key: NODE_ENV
+        value: production
+      - key: PORT  
+        value: 10000
