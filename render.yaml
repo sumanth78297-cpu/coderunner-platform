@@ -1,20 +1,9 @@
 services:
   - type: web
     name: coderunner-platform
-    runtime: node
+    runtime: docker
     plan: free
-    buildCommand: |
-      echo "=== Installing root dependencies ==="
-      npm install
-      echo "=== Building client ==="
-      cd client 
-      npm install --legacy-peer-deps
-      npm run build
-      echo "=== Installing server dependencies ==="  
-      cd ../server 
-      npm install
-      echo "=== Build completed successfully ==="
-    startCommand: cd server && node real-server.js
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: NODE_ENV
         value: production

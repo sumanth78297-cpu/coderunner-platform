@@ -1,43 +1,48 @@
-# Multi-stage build for optimal production image
-FROM node:18-slim AS client-builder
+# Multi-stage build with Python support for code execution  
+FROM python:3.11-bullseye AS base
 
+# Install Node.js 18.x
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Verify installations
+RUN python3 --version && node --version && npm --version
+
+# Client build stage
+FROM base AS client-builder
 WORKDIR /app/client
 COPY client/package*.json ./
-RUN npm install && npm cache clean --force
-
+RUN npm install --legacy-peer-deps
 COPY client/ ./
 RUN npm run build
 
 # Production stage
-FROM node:18-slim
-
-# Create app directory and user
-RUN groupadd -r coderunner && useradd -r -g coderunner coderunner
+FROM base AS production
 WORKDIR /app
 
-# Copy server dependencies and install
+# Copy server files and install dependencies
 COPY server/package*.json ./server/
-RUN cd server && npm install && npm cache clean --force
+RUN cd server && npm install
 
-# Copy server source
 COPY server/ ./server/
 
 # Copy built client
 COPY --from=client-builder /app/client/build ./client/build
 
-# Create logs directory
-RUN mkdir -p logs temp-files && chown -R coderunner:coderunner /app
+# Create required directories
+RUN mkdir -p logs temp-files
 
-# Security: Run as non-root user (except Docker socket access)
-USER coderunner
+# Verify Python and Node.js are available
+RUN echo "=== Environment Check ===" && \
+    python3 --version && \
+    node --version && \
+    npm --version && \
+    echo "=== Ready for Code Execution ==="
 
 # Expose port
 EXPOSE 10000
 
-# Startup command
+# Start server
 CMD ["node", "server/real-server.js"]
-
-# Labels for better maintainability
-LABEL maintainer="CodeRunner Team"
-LABEL version="1.0.0"
-LABEL description="CodeRunner - Real-time code execution platform"
