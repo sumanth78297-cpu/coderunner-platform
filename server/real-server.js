@@ -67,6 +67,7 @@ app.get('/api/languages', (req, res) => {
     languages: [
       { id: 'python', name: 'Python 3.11', extension: 'py' },
       { id: 'javascript', name: 'Node.js 18', extension: 'js' },
+      { id: 'cpp', name: 'C++ (g++)', extension: 'cpp' },
       { id: 'go', name: 'Go 1.21', extension: 'go' },
       { id: 'java', name: 'Java 17', extension: 'java' }
     ]
@@ -208,6 +209,7 @@ async function checkEnvironment() {
   const checks = [
     { name: 'Python', command: 'python3', available: false },
     { name: 'Node.js', command: 'node', available: false },
+    { name: 'C++', command: 'g++', available: false },
     { name: 'Go', command: 'go', available: false },
     { name: 'Java', command: 'javac', available: false }
   ];
@@ -221,7 +223,7 @@ async function checkEnvironment() {
   
   if (availableLanguages.length === 0) {
     console.warn('⚠️  No execution environments detected. Code execution will fail.');
-    console.warn('   Install: python3, node, go, and/or javac to enable code execution.');
+    console.warn('   Install: python3, node, g++, go, and/or javac to enable code execution.');
   } else {
     console.log(`🎉 Ready to execute: ${availableLanguages.join(', ')}`);
   }

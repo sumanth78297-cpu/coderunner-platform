@@ -1,14 +1,15 @@
-# Multi-stage build with Python support for code execution  
+# Multi-stage build with Python, Node.js, and C++ support for code execution  
 FROM python:3.11-bullseye AS base
 
-# Install Node.js 18.x
+# Install Node.js 18.x and C++ build tools
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get install -y nodejs && \
+    apt-get update && \
+    apt-get install -y nodejs g++ gcc build-essential && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # Verify installations
-RUN python3 --version && node --version && npm --version
+RUN python3 --version && node --version && npm --version && g++ --version
 
 # Client build stage
 FROM base AS client-builder
@@ -34,12 +35,13 @@ COPY --from=client-builder /app/client/build ./client/build
 # Create required directories
 RUN mkdir -p logs temp-files
 
-# Verify Python and Node.js are available
+# Verify all runtimes are available
 RUN echo "=== Environment Check ===" && \
     python3 --version && \
     node --version && \
     npm --version && \
-    echo "=== Ready for Code Execution ==="
+    g++ --version && \
+    echo "=== Ready for Multi-Language Code Execution ==="
 
 # Expose port
 EXPOSE 10000

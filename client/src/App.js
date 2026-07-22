@@ -4,6 +4,7 @@ import { javascript } from '@codemirror/lang-javascript';
 import { python } from '@codemirror/lang-python';
 import { go } from '@codemirror/lang-go';
 import { java } from '@codemirror/lang-java';
+import { cpp } from '@codemirror/lang-cpp';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { EditorView } from '@codemirror/view';
 import io from 'socket.io-client';
@@ -26,6 +27,7 @@ import './App.css';
 const languages = [
   { id: 'python', name: 'Python 3.11', extension: 'py', example: `# Welcome to CodeRunner!\n# Write your Python code here\n\nprint("Hello, CodeRunner!")\n\n# Example: Calculate factorial\ndef factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\nprint(f"Factorial of 5: {factorial(5)}")` },
   { id: 'javascript', name: 'Node.js 18', extension: 'js', example: `// Welcome to CodeRunner!\n// Write your JavaScript code here\n\nconsole.log("Hello, CodeRunner!");\n\n// Example: Calculate factorial\nfunction factorial(n) {\n    if (n <= 1) return 1;\n    return n * factorial(n - 1);\n}\n\nconsole.log(\`Factorial of 5: \${factorial(5)}\`);` },
+  { id: 'cpp', name: 'C++ (g++)', extension: 'cpp', example: `#include <iostream>\nusing namespace std;\n\n// Welcome to CodeRunner!\n// Write your C++ code here\n\nint factorial(int n) {\n    if (n <= 1) return 1;\n    return n * factorial(n - 1);\n}\n\nint main() {\n    cout << "Hello, CodeRunner!" << endl;\n    \n    // Example: Calculate factorial\n    cout << "Factorial of 5: " << factorial(5) << endl;\n    return 0;\n}` },
   { id: 'go', name: 'Go 1.21', extension: 'go', example: `package main\n\nimport "fmt"\n\n// Welcome to CodeRunner!\n// Write your Go code here\n\nfunc main() {\n    fmt.Println("Hello, CodeRunner!")\n    \n    // Example: Calculate factorial\n    fmt.Printf("Factorial of 5: %d\\n", factorial(5))\n}\n\nfunc factorial(n int) int {\n    if n <= 1 {\n        return 1\n    }\n    return n * factorial(n-1)\n}` },
   { id: 'java', name: 'Java 17', extension: 'java', example: `public class Main {\n    // Welcome to CodeRunner!\n    // Write your Java code here\n    \n    public static void main(String[] args) {\n        System.out.println("Hello, CodeRunner!");\n        \n        // Example: Calculate factorial\n        System.out.println("Factorial of 5: " + factorial(5));\n    }\n    \n    public static long factorial(int n) {\n        if (n <= 1) return 1;\n        return n * factorial(n - 1);\n    }\n}` }
 ];
@@ -34,6 +36,7 @@ const getLanguageMode = (languageId) => {
   switch (languageId) {
     case 'python': return [python()];
     case 'javascript': return [javascript()];
+    case 'cpp': return [cpp()];
     case 'go': return [go()];
     case 'java': return [java()];
     default: return [];

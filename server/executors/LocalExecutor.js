@@ -114,6 +114,13 @@ class LocalExecutor {
         command: 'node',
         args: []
       },
+      cpp: {
+        extension: 'cpp',
+        command: 'g++',
+        args: ['-o'],
+        needsCompilation: true,
+        runCommand: './program'
+      },
       go: {
         extension: 'go',
         command: 'go',
@@ -124,7 +131,8 @@ class LocalExecutor {
         command: 'javac',
         args: [],
         runCommand: 'java',
-        className: 'Main'
+        className: 'Main',
+        needsCompilation: true
       }
     };
     
@@ -142,6 +150,8 @@ class LocalExecutor {
       let result;
       if (config.language === 'java') {
         result = await this.runJava(filepath, config, input);
+      } else if (config.needsCompilation) {
+        result = await this.runCompiled(filepath, config, input, executionId);
       } else {
         result = await this.runProcess(filepath, config, input);
       }
@@ -155,6 +165,10 @@ class LocalExecutor {
           if (config.language === 'java') {
             const classFile = filepath.replace('.java', '.class');
             await fs.unlink(classFile).catch(() => {});
+          } else if (config.needsCompilation) {
+            // Clean up compiled executable
+            const executablePath = path.join(this.tempDir, 'program');
+            await fs.unlink(executablePath).catch(() => {});
           }
         } catch (err) {
           console.warn('Cleanup error:', err.message);
@@ -174,6 +188,8 @@ class LocalExecutor {
       let result;
       if (config.language === 'java') {
         result = await this.runJavaStream(filepath, config, input, onOutput, onComplete);
+      } else if (config.needsCompilation) {
+        result = await this.runCompiledStream(filepath, config, input, executionId, onOutput, onComplete);
       } else {
         result = await this.runProcessStream(filepath, config, input, onOutput, onComplete);
       }
@@ -187,6 +203,10 @@ class LocalExecutor {
           if (config.language === 'java') {
             const classFile = filepath.replace('.java', '.class');
             await fs.unlink(classFile).catch(() => {});
+          } else if (config.needsCompilation) {
+            // Clean up compiled executable
+            const executablePath = path.join(this.tempDir, 'program');
+            await fs.unlink(executablePath).catch(() => {});
           }
         } catch (err) {
           console.warn('Cleanup error:', err.message);
@@ -336,6 +356,46 @@ class LocalExecutor {
     // Then run
     const classFile = path.join(this.tempDir, config.className);
     return await this.runProcessStream(classFile, { command: 'java', args: [] }, input, onOutput, onComplete);
+  }
+
+  async runCompiled(filepath, config, input, executionId) {
+    const executablePath = path.join(this.tempDir, 'program');
+    
+    // First compile
+    const compileArgs = [...config.args, executablePath, filepath];
+    const compileResult = await this.runProcess(filepath, { 
+      command: config.command, 
+      args: compileArgs.slice(1) // Remove first arg which is the executable path 
+    }, '');
+    
+    if (compileResult.error) {
+      return compileResult;
+    }
+
+    // Then run the compiled executable
+    return await this.runProcess(executablePath, { command: config.runCommand, args: [] }, input);
+  }
+
+  async runCompiledStream(filepath, config, input, executionId, onOutput, onComplete) {
+    const executablePath = path.join(this.tempDir, 'program');
+    
+    // First compile
+    onOutput({ type: 'stdout', data: `Compiling ${config.extension.toUpperCase()} code...\n` });
+    const compileArgs = [...config.args, executablePath, filepath];
+    const compileResult = await this.runProcess(filepath, { 
+      command: config.command, 
+      args: compileArgs.slice(1) // Remove first arg
+    }, '');
+    
+    if (compileResult.error) {
+      onComplete(compileResult);
+      return compileResult;
+    }
+
+    onOutput({ type: 'stdout', data: `Running ${config.extension.toUpperCase()} program...\n` });
+    
+    // Then run the compiled executable
+    return await this.runProcessStream(executablePath, { command: config.runCommand, args: [] }, input, onOutput, onComplete);
   }
 }
 
