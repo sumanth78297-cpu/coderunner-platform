@@ -1,14 +1,14 @@
 services:
   - type: web
     name: coderunner-platform
-    env: node
+    runtime: node
     plan: free
     buildCommand: |
       echo "Installing root dependencies..."
       npm install
       echo "Building client..."
       cd client && npm install && npm run build
-      echo "Installing server dependencies..."
+      echo "Installing server dependencies..."  
       cd ../server && npm install
       echo "Build completed successfully!"
     startCommand: cd server && node real-server.js
@@ -17,5 +17,7 @@ services:
         value: production
       - key: PORT
         value: 10000
+      - key: CORS_ORIGIN
+        value: https://coderunner-platform.onrender.com
     healthCheckPath: /api/health
     autoDeploy: false
