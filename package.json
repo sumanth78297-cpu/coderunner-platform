@@ -1,0 +1,32 @@
+{
+  "name": "coderunner-platform",
+  "version": "1.0.0",
+  "description": "Real-time code execution platform with multi-language support",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "server:dev": "cd server && npm run dev",
+    "client:dev": "cd client && npm start",
+    "build": "cd client && npm run build",
+    "build:full": "npm install && cd client && npm install && npm run build && cd ../server && npm install",
+    "start": "cd server && node real-server.js",
+    "start:prod": "NODE_ENV=production cd server && node real-server.js",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up",
+    "docker:down": "docker-compose down",
+    "deploy:render": "./scripts/quick-deploy.sh",
+    "test": "echo 'No tests specified' && exit 0"
+  },
+  "keywords": [
+    "code-execution",
+    "docker",
+    "websockets",
+    "ide",
+    "multi-language"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

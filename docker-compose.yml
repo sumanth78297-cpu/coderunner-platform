@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  coderunner-app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:5000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./logs:/app/logs
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+    restart: unless-stopped
+    networks:
+      - coderunner-network
+    depends_on:
+      - setup-docker-images
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.coderunner.rule=Host(`localhost`)"
+      - "traefik.http.services.coderunner.loadbalancer.server.port=5000"
+
+  setup-docker-images:
+    image: docker:24-cli
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: >
+      sh -c "
+        echo '🐳 Pulling execution environment images...' &&
+        docker pull python:3.11-slim &&
+        docker pull node:18-slim &&
+        docker pull golang:1.21-alpine &&
+        docker pull openjdk:17-slim &&
+        echo '✅ All execution images ready!' &&
+        echo '🚀 CodeRunner is starting...'
+      "
+    networks:
+      - coderunner-network
+
+networks:
+  coderunner-network:
+    driver: bridge
+
+volumes:
+  docker-socket:
+    external: true

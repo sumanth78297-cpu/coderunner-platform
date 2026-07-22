@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CodeRunner Debug Client</title>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #1e1e1e; color: white; }
+        #output { 
+            background: #000; 
+            color: #0f0; 
+            padding: 10px; 
+            height: 300px; 
+            overflow-y: auto; 
+            white-space: pre-wrap; 
+            font-family: monospace;
+        }
+        button { padding: 10px 20px; margin: 10px 0; }
+        #status { color: #00ff00; }
+    </style>
+</head>
+<body>
+    <h1>CodeRunner WebSocket Debug Client</h1>
+    <div id="status">Connecting...</div>
+    <button onclick="testExecution()">Test Code Execution</button>
+    <button onclick="clearOutput()">Clear Output</button>
+    <div id="output"></div>
+
+    <script>
+        const socket = io('ws://localhost:5001');
+        const output = document.getElementById('output');
+        const status = document.getElementById('status');
+
+        socket.on('connect', () => {
+            status.textContent = 'Connected ✓';
+            status.style.color = '#00ff00';
+            addOutput('🔗 Connected to CodeRunner server\n');
+        });
+
+        socket.on('disconnect', () => {
+            status.textContent = 'Disconnected ✗';
+            status.style.color = '#ff0000';
+            addOutput('❌ Disconnected from server\n');
+        });
+
+        socket.on('execution-output', (data) => {
+            addOutput(`[OUTPUT] ${data.data}`);
+        });
+
+        socket.on('execution-complete', (result) => {
+            addOutput(`[COMPLETE] Success: ${result.success}, Time: ${result.executionTime}ms\n`);
+            addOutput(`[COMPLETE] Final output: ${result.output}\n`);
+        });
+
+        socket.on('execution-error', (error) => {
+            addOutput(`[ERROR] ${error.error || error.message}\n`);
+        });
+
+        function addOutput(text) {
+            output.textContent += text;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function clearOutput() {
+            output.textContent = '';
+        }
+
+        function testExecution() {
+            addOutput('🚀 Sending test execution request...\n');
+            socket.emit('execute-code', {
+                code: 'print("Hello from debug client!")',
+                language: 'python',
+                input: ''
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,366 @@
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #1e1e1e;
+  color: #ffffff;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: #2d2d2d;
+  border-bottom: 1px solid #404040;
+  min-height: 60px;
+  flex-shrink: 0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0084ff;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #cccccc;
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.language-select {
+  min-width: 160px;
+  font-weight: 500;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.editor-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #404040;
+  min-width: 0;
+}
+
+.output-panel {
+  flex: 0 0 45%;
+  display: flex;
+  flex-direction: column;
+  min-width: 400px;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #2d2d2d;
+  border-bottom: 1px solid #404040;
+  flex-shrink: 0;
+}
+
+.panel-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.editor-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.editor-container .cm-editor {
+  height: 100%;
+}
+
+.editor-container .cm-scroller {
+  font-family: 'JetBrains Mono', 'Fira Code', Monaco, monospace;
+}
+
+.input-section {
+  background: #252525;
+  border-bottom: 1px solid #404040;
+  padding: 12px 16px;
+  flex-shrink: 0;
+}
+
+.input-prompt {
+  background: #1a1a1a;
+  border-top: 1px solid #404040;
+  padding: 12px 16px;
+  flex-shrink: 0;
+}
+
+.input-prompt-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.input-field {
+  flex: 1;
+  background: #2d2d2d;
+  border: 1px solid #404040;
+  border-radius: 4px;
+  padding: 8px 12px;
+  color: white;
+  font-family: 'JetBrains Mono', 'Fira Code', Monaco, monospace;
+  font-size: 14px;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #0084ff;
+}
+
+.input-field::placeholder {
+  color: #888;
+}
+
+.input-textarea {
+  width: 100%;
+  background: #1e1e1e;
+  border: 1px solid #404040;
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: white;
+  font-family: 'JetBrains Mono', 'Fira Code', Monaco, monospace;
+  font-size: 14px;
+  resize: vertical;
+  min-height: 60px;
+}
+
+.input-textarea:focus {
+  outline: none;
+  border-color: #0084ff;
+}
+
+.input-textarea::placeholder {
+  color: #888;
+}
+
+.output-container {
+  flex: 1;
+  overflow-y: auto;
+  background: #1a1a1a;
+  position: relative;
+}
+
+.output-text {
+  margin: 0;
+  padding: 16px;
+  font-family: 'JetBrains Mono', 'Fira Code', Monaco, monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #e6e6e6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.output-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: #888;
+  padding: 40px;
+}
+
+.output-placeholder svg {
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.execution-stats {
+  background: #252525;
+  border-top: 1px solid #404040;
+  padding: 12px 16px;
+  flex-shrink: 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 16px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #cccccc;
+}
+
+.stat-item svg {
+  opacity: 0.7;
+}
+
+.execution-indicator {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.9);
+  padding: 20px 30px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  z-index: 1000;
+  border: 1px solid #404040;
+  backdrop-filter: blur(10px);
+}
+
+.execution-indicator .pulse {
+  font-size: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+  }
+  
+  .editor-panel {
+    border-right: none;
+    border-bottom: 1px solid #404040;
+  }
+  
+  .output-panel {
+    flex: 0 0 40%;
+    min-width: unset;
+  }
+  
+  .header {
+    flex-wrap: wrap;
+    gap: 12px;
+    min-height: auto;
+    padding: 12px 16px;
+  }
+  
+  .header-center {
+    order: 3;
+    flex: 1 1 100%;
+    justify-content: flex-start;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .header-left .connection-status {
+    display: none;
+  }
+  
+  .logo {
+    font-size: 18px;
+  }
+  
+  .btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+/* Dark theme adjustments */
+.cm-theme-dark {
+  background: #1a1a1a !important;
+}
+
+.cm-editor.cm-focused {
+  outline: none !important;
+}
+
+/* Animation for smooth transitions */
+.panel-header,
+.execution-stats,
+.input-section {
+  transition: all 0.2s ease;
+}
+
+/* Loading animation */
+.pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+/* Syntax highlighting enhancements */
+.output-text {
+  /* Better contrast for output text */
+  color: #f0f0f0;
+}
+
+/* Error styling in output */
+.output-text:has-text("Error"),
+.output-text:has-text("❌") {
+  /* This would need JavaScript to implement properly */
+}
+
+/* Success styling */
+.output-text:has-text("✅") {
+  /* This would need JavaScript to implement properly */
+}
