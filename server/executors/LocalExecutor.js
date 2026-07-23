@@ -359,32 +359,47 @@ class LocalExecutor {
   }
 
   async runCompiled(filepath, config, input, executionId) {
-    const executablePath = path.join(this.tempDir, 'program');
+    const executablePath = path.join(this.tempDir, `program_${executionId}`);
     
-    // First compile
+    // First compile: g++ -o program_uuid filepath.cpp
     const compileArgs = [...config.args, executablePath, filepath];
-    const compileResult = await this.runProcess(filepath, { 
+    
+    // Use a dummy filepath since args already contain the actual filepath
+    const compileResult = await this.runProcess('', { 
       command: config.command, 
-      args: compileArgs.slice(1) // Remove first arg which is the executable path 
+      args: compileArgs
     }, '');
     
     if (compileResult.error) {
       return compileResult;
     }
-
+    
     // Then run the compiled executable
-    return await this.runProcess(executablePath, { command: config.runCommand, args: [] }, input);
+    const result = await this.runProcess('', { command: executablePath, args: [] }, input);
+    
+    // Clean up executable
+    setTimeout(async () => {
+      try {
+        await fs.unlink(executablePath);
+      } catch (err) {
+        console.warn('Executable cleanup error:', err.message);
+      }
+    }, 500);
+    
+    return result;
   }
 
   async runCompiledStream(filepath, config, input, executionId, onOutput, onComplete) {
-    const executablePath = path.join(this.tempDir, 'program');
+    const executablePath = path.join(this.tempDir, `program_${executionId}`);
     
-    // First compile
+    // First compile: g++ -o program_uuid filepath.cpp
     onOutput({ type: 'stdout', data: `Compiling ${config.extension.toUpperCase()} code...\n` });
     const compileArgs = [...config.args, executablePath, filepath];
-    const compileResult = await this.runProcess(filepath, { 
+    
+    // Use a dummy filepath since args already contain the actual filepath
+    const compileResult = await this.runProcess('', { 
       command: config.command, 
-      args: compileArgs.slice(1) // Remove first arg
+      args: compileArgs
     }, '');
     
     if (compileResult.error) {
@@ -395,7 +410,19 @@ class LocalExecutor {
     onOutput({ type: 'stdout', data: `Running ${config.extension.toUpperCase()} program...\n` });
     
     // Then run the compiled executable
-    return await this.runProcessStream(executablePath, { command: config.runCommand, args: [] }, input, onOutput, onComplete);
+    const result = await this.runProcessStream('', { command: executablePath, args: [] }, input, onOutput, (res) => {
+      // Clean up executable after completion
+      setTimeout(async () => {
+        try {
+          await fs.unlink(executablePath);
+        } catch (err) {
+          console.warn('Executable cleanup error:', err.message);
+        }
+      }, 500);
+      onComplete(res);
+    });
+    
+    return result;
   }
 }
 
